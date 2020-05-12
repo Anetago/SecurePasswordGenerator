@@ -1,8 +1,9 @@
 <?php
 
-namespace Anetago\Web\PasswordGenerator;
+namespace SimplePasswordGenerator;
 
-use Anetago\Web\PasswordGenerator\Tests\Cases\PasswordGeneratorTest;
+use SimplePasswordGenerator\Tests\Cases\NotTestImplementException;
+use SimplePasswordGenerator\Tests\Cases\PasswordGeneratorTest;
 
 /**
  * Override function_exists
@@ -20,4 +21,14 @@ function function_exists($function)
     }
 
     return \function_exists($function);
+}
+
+
+function mb_str_split($str, $split_length, $encoding)
+{
+    if (!\function_exists("mb_str_split")) {
+        throw new NotTestImplementException();
+    }
+
+    return \mb_str_split($str, $split_length, $encoding);
 }

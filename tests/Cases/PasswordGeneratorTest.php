@@ -1,9 +1,9 @@
 <?php
 
-namespace Anetago\Web\PasswordGenerator\Tests\Cases;
+namespace SimplePasswordGenerator\Tests\Cases;
 
-use Anetago\Web\PasswordGenerator\Exception\NotImplementException;
-use Anetago\Web\PasswordGenerator\Tests\OverrideTestCase;
+use SimplePasswordGenerator\Exception\NotImplementException;
+use SimplePasswordGenerator\Tests\OverrideTestCase;
 use InvalidArgumentException;
 
 class PasswordGeneratorTest extends OverrideTestCase
@@ -15,7 +15,7 @@ class PasswordGeneratorTest extends OverrideTestCase
     public static $randomIntExists = true;
     public static $mbStrSplitExists = true;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         self::$opensslExists = true;
         self::$randomIntExists = true;
@@ -148,14 +148,30 @@ class PasswordGeneratorTest extends OverrideTestCase
         $this->assertEquals($expected2, $actual2);
     }
 
-    public function testSetSymbolsWhenmbStrSplitUsed()
+    public function testUseTrimSimilarLooking()
     {
-        if (!\function_exists("mb_str_split")) {
-            $this->assertFalse(\function_exists("mb_str_split"));
-            return;
-        }
+        $expected = false;
 
+        $obj = new MockPasswordGenerator();
+        $obj->useTrimSimilarLooking($expected);
+        $actual = $obj->useTrimSimilarLookingFacade();
+
+        $this->assertEquals($expected, $actual);
+
+        $expected2 = true;
+        $obj->useTrimSimilarLooking($expected2);
+        $actual2 = $obj->useTrimSimilarLookingFacade();
+
+        $this->assertEquals($expected2, $actual2);
+    }
+
+    public function testSetSymbolsWhenMbStrSplitUsed()
+    {
         self::$mbStrSplitExists = true;
+
+        if (!\function_exists("mb_str_split")) {
+            $this->expectException(NotTestImplementException::class);
+        }
 
         $expected = '!"#';
 
@@ -221,7 +237,10 @@ class PasswordGeneratorTest extends OverrideTestCase
     private function prepareDepencency()
     {
         $this->setDependencies([
-            "testUseNumeric", "testUseLowerAlphabet", "testUseUpperAlphabet", "testUseSymbols", "testSetSymbols", "testSetSymbolsDuplicatedChacters", "testSetSymbolsIncludingAlphabet"
+            "testUseNumeric", "testUseLowerAlphabet",
+            "testUseUpperAlphabet", "testUseSymbols",
+            "testSetSymbols", "testSetSymbolsDuplicatedChacters",
+            "testSetSymbolsIncludingAlphabet", "testUseTrimSimilarLooking"
         ]);
     }
 
@@ -365,5 +384,71 @@ class PasswordGeneratorTest extends OverrideTestCase
 
         $password2 = $obj->generate();
         $this->assertNotEquals($password, $password2);
+    }
+
+    public function testTrimSimilarLookingCheckOnlyToNumeric()
+    {
+        self::$mbStrSplitExists = false;
+
+        $obj = new MockPasswordGenerator(false);
+        $obj->useNumeric(true);
+        $obj->useLowerAlphabet(false);
+        $obj->useUpperAlphabet(false);
+        $obj->useSymbols(false);
+        $obj->useTrimSimilarLooking(true);
+
+        $expect = trim('234578');
+        $actual = $obj->getKeySpaceFacade();
+        $this->assertEquals($expect, $actual);
+    }
+
+    public function testTrimSimilarLookingCheckOnlyToAlphabet()
+    {
+        self::$mbStrSplitExists = false;
+
+        $obj = new MockPasswordGenerator(false);
+        $obj->useNumeric(false);
+        $obj->useLowerAlphabet(true);
+        $obj->useUpperAlphabet(true);
+        $obj->useSymbols(false);
+        $obj->useTrimSimilarLooking(true);
+
+        $expect = trim('acdefhijkmnprstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ');
+        $actual = $obj->getKeySpaceFacade();
+        $this->assertEquals($expect, $actual);
+    }
+
+    public function testTrimSimilarLookingCheckOnlyToSymbol()
+    {
+        self::$mbStrSplitExists = false;
+
+        $obj = new MockPasswordGenerator(false);
+        $obj->useNumeric(false);
+        $obj->useLowerAlphabet(false);
+        $obj->useUpperAlphabet(false);
+        $obj->useSymbols(true);
+        $obj->useTrimSimilarLooking(true);
+
+        $expect = '!#$%&*+-/<=>?@\^_~';
+        $actual = $obj->getKeySpaceFacade();
+        $this->assertEquals($expect, $actual);
+    }
+
+    public function testTrimSimilarLookingAll()
+    {
+        self::$mbStrSplitExists = false;
+
+        $obj = new MockPasswordGenerator(false);
+        $obj->useNumeric(true);
+        $obj->useLowerAlphabet(true);
+        $obj->useUpperAlphabet(true);
+        $obj->useSymbols(true);
+        $obj->useTrimSimilarLooking(true);
+
+        $expect = '234578';
+        $expect .= 'acdefhijkmnprstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ';
+        $expect .= '!#$%&*+-/<=>?@\^_~';
+        $actual = $obj->getKeySpaceFacade();
+        $this->assertEquals($expect, $actual);
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Anetago\Web\PasswordGenerator\Tests\Cases;
+namespace SimplePasswordGenerator\Tests\Cases;
 
-use Anetago\Web\PasswordGenerator\PasswordGenerator;
+use SimplePasswordGenerator\PasswordGenerator;
 
 final class MockPasswordGenerator extends PasswordGenerator
 {
@@ -52,11 +52,16 @@ final class MockPasswordGenerator extends PasswordGenerator
         return $this->symbols;
     }
 
+    public function useTrimSimilarLookingFacade()
+    {
+        return $this->useTrimSimilarLooking;
+    }
+
     public function getKeySpaceFacade()
     {
         return $this->keySpace;
     }
-    
+
     public function get_use_random_int()
     {
         return $this->use_random_int;
