@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/Anetago/PasswordGenerator.svg?branch=master)](https://travis-ci.org/Anetago/PasswordGenerator)
-[![codecov](https://codecov.io/gh/Anetago/PasswordGenerator/branch/master/graph/badge.svg)](https://codecov.io/gh/Anetago/PasswordGenerator)
-
 # Simple Password Generator
-
+[![Build Status](https://app.travis-ci.com/tk88e/PasswordGenerator.svg?branch=main)](https://app.travis-ci.com/tk88e/PasswordGenerator)
+[![codecov](https://codecov.io/gh/tk88e/PasswordGenerator/branch/main/graph/badge.svg?token=8X531X31V9)](https://codecov.io/gh/tk88e/PasswordGenerator)
 
 ## Feature
 - Supports CSPRNG algorithm (cryptographically secure pseudo random number generator)
